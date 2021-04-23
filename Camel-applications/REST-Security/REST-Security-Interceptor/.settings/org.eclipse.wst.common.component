@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="REST-Security-Interceptor">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <property name="context-root" value="REST-Security-Interceptor"/>
+        <property name="java-output-path" value="/REST-Security-Interceptor/build/classes"/>
+    </wb-module>
+</project-modules>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
+	<!-- need it for loading the CXFServlet -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+
+	<bean id="myRoutes" class="org.app.CamelRoute" />
+
+	<!-- <bean id="loggingOutInterceptor"
+		class="org.apache.cxf.interceptor.LoggingOutInterceptor">
+		it really should have been user-prestream but CXF does have such phase!
+		<constructor-arg value="target/write" />
+	</bean> -->
+
+	<camelContext
+		xmlns="http://camel.apache.org/schema/spring">
+		<routeBuilder ref="myRoutes"/>
+
+		<!-- <cxf:cxfEndpoint id="serviceEndpoint"
+			address="http://localhost:8090/camel-soap-cxf-app/webservices/incident"
+			serviceClass="com.server.IncidentServiceImpl">
+			<cxf:outInterceptors>
+				<ref bean="loggingOutInterceptor" />
+			</cxf:outInterceptors>
+			<cxf:properties>
+				<entry key="dataFormat" value="RAW" />
+			</cxf:properties>
+		</cxf:cxfEndpoint>-->
+		
+	</camelContext>
+
+</beans>
+ 

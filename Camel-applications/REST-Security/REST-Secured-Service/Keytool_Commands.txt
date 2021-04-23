@@ -1,0 +1,18 @@
+
+ keytool command options to genetrate key
+ 
+ **General convention is the alias name should be all lower case and NOT like 
+   MyUser or myUser but should be  'myuser'  ***
+   
+   For this myuser keys key password is Secret123 and keystore password is myData
+   
+keytool -genkey -alias myuser -keyalg RSA -keystore d:/myKeys -keysize 2048
+
+keytool -genkey -alias myuser -keyalg RSA -sigalg SHA1withRSA -keypass myData -storepass myData -keystore d:/myKeys -dname "cn=vijay"
+ 
+
+To export the key for adding into  another keystore
+keytool -export -rfc -keystore d:/myKeys -storepass myData -alias myuser -file d:/data.cer
+
+To import the key into another keystore
+keytool -import -trustcacerts -keystore d:/myKeys -storepass myData -alias myuser -file d:/data.cer -noprompt
