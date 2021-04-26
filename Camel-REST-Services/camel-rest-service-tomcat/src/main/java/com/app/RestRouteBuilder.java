@@ -1,6 +1,8 @@
  
 package com.app;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 
@@ -23,33 +25,71 @@ public class RestRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-
+    System.out.println("\n****The camel is running the Wrapper rest spi on web server");
         // configure we want to use servlet as the component for the rest DSL
         // and we enable json binding mode
         restConfiguration().component("servlet").bindingMode(RestBindingMode.json)
             // and output using pretty print
-            .dataFormatProperty("prettyPrint", "true")
-             
+            .dataFormatProperty("prettyPrint", "true")             
             .contextPath("camel-rest-web/rest").port(8080);
-
+        
+        
+		/*
+		 * restConfiguration() // to use jetty component and run on port 8080
+		 * .component("jetty").port(8080)
+		 */ 
+       //RestDefinition
         // this provider REST service is json only
         rest("/provider").description("Provider rest service")
-            .consumes("application/json").produces("application/json")
+            .consumes("application/json")
+            .produces("application/json")
 
-            .get("/{id}").description("Find provider by id").outType(Provider.class)
+            .get("/{id}").description("Find provider by id")
+            .outType(Provider.class)
                 .to("bean:providerService?method=getProvider(${header.id})")
 
-            .put().description("Updates or create a provider").type(Provider.class)
+            .put().description("Updates or create a provider")
+            .type(Provider.class)
                 .to("bean:providerService?method=updateProvider")              
                
-				
-				  .get().description("List all providers").outType(Provider[].class)
-				  .to("bean:providerService?method=listProviders")
-				 
-                
-        	.get("/search").description("Search by Zip").outType(Provider[].class)
-        		.route().log("Incoming zip: ${header.zip}")
-        		.to("bean:providerService?method=searchByZip(${header.zip})").endRest();
+              .get("/search")
+                .description("Search by Zip")
+                .outType(Provider[].class)
+        		//.route().log("Incoming zip: ${header.zip}")
+        		.to("bean:providerService?method=searchByZip(${header.zip})")
+		   .get()
+		    .description("List all providers")
+		    .outType(Provider[].class)		 
+			 
+               .route().process(new Processor() {
+//RestDefinition
+ //RouteDefinition	
+				@Override
+				public void process(Exchange exchange) throws Exception {
+					 System.out.println("\n****The Camel route processor is logging the action on server\n");
+					 String data = exchange.getIn().getBody(String.class);
+					 System.out.println("\n****The logged data is \n"+data);
+					 
+					 exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+				}
+				  
+			  }) 
+               .to("bean:providerService?method=listProviders")              
+        		.endRest();
+      
+       // from("timer://test?period=1500").to("direct:input");
+        
+        from("direct:input")
+        .setHeader(Exchange.HTTP_METHOD, constant("GET"))        
+        .to("http://localhost:8080/camel-rest-web/rest/provider/")
+        .to("stream:out");
+        
+         
+        
+		/*
+		 * from("http://localhost:8080/camel-rest-web/rest/provider/")
+		 * .to("stream:out");
+		 */
     }
 
 }

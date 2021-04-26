@@ -8,7 +8,7 @@ public class CustomProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		System.out.println("The CustomProcessor for rest get data ");
-		String headerValue = (String) exchange.getIn().getHeader(Exchange.HTTP_URI);
+		String headerValue = (String) exchange.getIn().getHeader(Exchange.HTTP_PATH);
 		System.out.println("The Processor http  path is  " + headerValue);
 
 		String text = headerValue.substring(headerValue.lastIndexOf("/") + 1);

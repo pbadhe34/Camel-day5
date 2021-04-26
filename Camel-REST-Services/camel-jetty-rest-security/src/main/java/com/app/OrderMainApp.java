@@ -21,7 +21,7 @@ public class OrderMainApp {
         
      
         // create Jetty Basic Auth security handler
-         main.bind("securityHandler", JettySecurity.createSecurityHandler());
+       main.bind("securityHandler", JettySecurity.createSecurityHandler());
         // main.bind("handlers", JettySecurity.createSecurityHandler());
 
         

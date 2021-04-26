@@ -37,7 +37,7 @@ public class OrderRoute extends RouteBuilder {
 
 
         
-        // configure rest-dsl
+        // configure rest-dsl to generate rest api with http server
         restConfiguration()
            // to use jetty component and run on port 8080
             .component("jetty").port(8080)            
@@ -49,8 +49,8 @@ public class OrderRoute extends RouteBuilder {
             
              
             // to setup jetty to use the security handler
-             .endpointProperty("handlers", "#securityHandler");
-           // .endpointProperty("handlers",JettySecurity.createSecurityHandler());
+            .endpointProperty("handlers", "#securityHandler");
+           //.endpointProperty("handlers",JettySecurity.createSecurityHandler());
        
       
 		
@@ -68,8 +68,19 @@ public class OrderRoute extends RouteBuilder {
 		   
         // rest services implementation under the orders context-path
 		 
-		  
+		//  RestConfigurationDefinition RestDefinition RouteDefinition
 		  CustomProcessor pocessor = new CustomProcessor();
+		  
+			/*
+			 * rest("/test") .get("/data") .to("file:src/data/data.json");
+			 * 
+			 */
+		  
+		   
+          
+               
+              
+              
 		  
 		      rest("/orders")            
 		            .get("/all/orders")
@@ -78,10 +89,12 @@ public class OrderRoute extends RouteBuilder {
 		                .to("bean:orderService?method=getOrder(${header.id})")
 		            .get("/get")
 		                .to("bean:orderService?method=getSingleOrder()")    
-		            .get("/add")
+		            .get("/getSingle")
 		                .to("bean:orderService?method=getSingleOrder()")
 		            .put("update/{id}")
 		                .to("bean:orderService?method=updateOrder(${header.id})")
+		             .post("/add")
+		                .to("bean:orderService?method=createOrder(${header.body})")
 		            .delete("/remove/{id}")
 		                .to("bean:orderService?method=cancelOrder(${header.id})")
 		            .get("/all/add/{id}").route().process(pocessor)
@@ -90,11 +103,15 @@ public class OrderRoute extends RouteBuilder {
 		               .handled(true).setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
 					    //Redircet the browser in case of errors in rest service
 					     // .setHeader(Exchange.HTTP_URL, constant("https://www.google.com/search?q=http%20method"));
-					    .transform().constant("Invalid Input Data for this URL");	 
+					    .transform().constant("Invalid Input Data for this URL")	 
 				  		
-				 	   			         
+					    .onException(CustomException.class)
+				  		.handled(true)
+				  		.transform().simple("THe data ${body} is not correct");
+				  		
+				 	   	//http://localhost:8080/orders/all/add/1		         
 		  
-		  
+		     
 			/*
 			 * RestDefinition rstd = rest("/orders") .get("/all/orders")
 			 * .to("bean:orderService?method=getAllOrders") .get("/get/{id}")
